@@ -1,0 +1,77 @@
+#!/bin/bash
+#Domyslnie drukuje na ekran wszystkie kosze wraz z zawartoscia
+#Podajac pierwszy parametr wypisze zawartosci koszy powiazanych z ta nazwa
+#np. folder w ktorym gdzies jest trash lub nazwa pliku znajdujacego sie w koszu
+
+#przyklad uzycia:
+#trashcontent fasola.py #wypisze elementy kosza w ktorym jest plik fasola.py 
+
+
+#Czyta domyslna konfiguracje
+. ~/.trashtools/.trash.cfg  >&2
+
+#Czyta kofiguracje uzytkownika jesli zdefiniowana
+
+if [ -r ~/.trashrc ];then
+	. ~/.trashrc  >&2
+fi
+
+
+echo -e "\e[1;30m----------------------------------------\e[0m"
+TRPATH=$(echo $(cat $HOME/.trashtools/.locahistory))
+
+if [ "$TRPATH" ];then
+
+	if [ $1 ];then
+		if grep -q "$1" $HOME/.trashtools/.locahistory;then
+			SEEK=$(grep "$1" $HOME/.trashtools/.locahistory)
+		elif grep -q "$1" $HOME/.trashtools/.history;then
+			SEEK=$(grep "$1" $HOME/.trashtools/.history | awk '{print $4}' | awk -F'/[^/]*$' '{print $1}' | awk '!x[$0]++')
+		else
+
+			echo -e "\e[1;31mBrak koszy do skojarzenia z wyrazeniem:\e[0m"
+			echo -e "\e[1;34m        $1\e[0m"
+			echo -e "\e[1;30m----------------------------------------\e[0m"
+		fi
+
+		if [ "$SEEK" ];then
+
+				for LINE in $SEEK;do
+					echo -n -e "\e[1;34mSkojarzono z \e[0m"
+					echo -e "\e[1;35m$LINE\e[0m"
+					ls $TCFLAG $LINE
+					echo -e "\e[1;30m----------------------------------------\e[0m"
+				done
+
+		fi
+
+	else
+
+		for LINE in $TRPATH;do
+			echo -n -e "\e[1;34mZawartosc \e[0m"
+			echo -e "\e[1;35m$LINE\e[0m"
+			ls $TCFLAG $LINE
+			echo -e "\e[1;30m----------------------------------------\e[0m"
+		done
+
+
+	fi
+else 	
+	echo -e "\e[1;32m             Brak koszy             \e[0m"
+	echo -e "\e[1;30m----------------------------------------\e[0m"
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,50 @@
+#!/bin/bash
+#Trash auto clean
+
+#Czyta domyslna konfiguracje
+. ~/.trashtools/.trash.cfg  >&2
+
+#Czyta kofiguracje uzytkownika jesli zdefiniowana
+
+if [ -r ~/.trashrc ];then
+	. ~/.trashrc  >&2
+fi
+
+
+
+if $AUTOCLEAN; then
+
+
+TODAY=$(date +'%j')
+TOYEAR=$(date +'%Y')
+
+if [ -e  $HOME/.trashtools/.history ]; then
+
+#tworzenie list plikow do usuniecia - przestarzale
+LIST1=$(cat $HOME/.trashtools/.history | awk '{if ( $3 == '$TOYEAR' )print $2" "$4}' | awk '{if ( '$TODAY'-'$DAYS'>$1 )print $2}')
+LIST2=$(cat $HOME/.trashtools/.history | awk '{if ( $3 == '$TOYEAR'-1 )print $2" "$4}' | awk '{if ( 365+'$TODAY'-'$DAYS'>$1 )print $2}')
+
+#wlasciwe usuwanie
+for FPATH in $LIST1 ; do
+	if [ -e $FPATH ]; then
+		/bin/rm -rf $FPATH
+		cat $HOME/.trashtools/.history > $HOME/.trashtools/.tmphistory
+		grep -v "$FPATH" $HOME/.trashtools/.tmphistory > $HOME/.trashtools/.history
+
+	fi
+done
+
+for FPATH in $LIST2 ; do
+	if [ -e $FPATH ]; then
+		/bin/rm -rf $FPATH
+		cat $HOME/.trashtools/.history > $HOME/.trashtools/.tmphistory
+		grep -v "$FPATH" $HOME/.trashtools/.tmphistory > $HOME/.trashtools/.history
+	fi
+done
+		/bin/rm -f $HOME/.trashtools/.tmphistory
+fi
+
+
+
+
+fi

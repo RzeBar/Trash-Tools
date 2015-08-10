@@ -1,0 +1,110 @@
+#!/bin/bash
+################
+# install only #
+################
+
+# instalacja dopisze do pliku .bashrc niezbędne komendy, oraz utworzy foldery w katalogu domowym
+# opis komend w pliku trashtools w folderze man
+
+echo -n -e "\e[1;34mWitamy w pliku instalacyjnym TRASH. Czy chcesz teraz zainstalować TRASH? [y/n]\e[0m"
+read QUE
+
+if  [[  $QUE  ==  "Y"  ||  $QUE  ==  "y"  ]]  ; then
+
+	if [ -e install.log ];then
+		/bin/rm -f install.log
+	fi
+	
+	if [ ! -e $HOME/.trashtools ] ; then
+		mkdir $HOME/.trashtools  2>> install.log
+	fi
+
+	############################################
+	# CZYSZCZENIE BASHRC PO STAREJ WERSJI 0.1v #
+	############################################
+
+	if grep -q 'alias "trashclean=/bin/rm -rf $HOME/.trash/*' $HOME/.bashrc ; then
+		cat $HOME/.bashrc > .tmpinstall
+		grep -v 'alias "trashclean=/bin/rm -rf $HOME/.trash/*' .tmpinstall > $HOME/.bashrc
+		/bin/rm -f .tmpinstall
+	fi
+
+	if grep -q 'alias "trashcontent=ls -la $HOME/.trash"' $HOME/.bashrc ; then
+		cat $HOME/.bashrc > .tmpinstall
+		grep -v 'alias "trashcontent=ls -la $HOME/.trash"' .tmpinstall > $HOME/.bashrc
+		/bin/rm -f .tmpinstall
+	fi
+
+	############################################
+
+
+	if ! grep -q 'export PATH=$PATH:$HOME/.trashtools' $HOME/.bashrc ; then
+		echo 'export PATH=$PATH:$HOME/.trashtools' >> $HOME/.bashrc
+	fi
+
+	if ! grep -q 'alias "rm=trash"' $HOME/.bashrc ; then
+		echo 'alias "rm=trash"' >> $HOME/.bashrc
+	fi
+
+	if ! grep -q 'alias "rm!=/bin/rm -r"' $HOME/.bashrc ; then
+		echo 'alias "rm!=/bin/rm -r"' >> $HOME/.bashrc
+	fi
+
+	if ! grep -q '$HOME/.trashtools/.trashautoclean' $HOME/.bashrc ; then
+		echo '$HOME/.trashtools/.trashautoclean' >> $HOME/.bashrc
+	fi
+
+	if [ ! -w $HOME/.trashtools/.locahistory ] ; then
+		touch $HOME/.trashtools/.locahistory
+	fi
+
+	cp -f restore $HOME/.trashtools  2>> install.log
+	cp -f trash $HOME/.trashtools  2>> install.log
+	cp -f trashclean $HOME/.trashtools  2>> install.log
+	cp -f trashcontent $HOME/.trashtools  2>> install.log
+	cp -f trashlist $HOME/.trashtools  2>> install.log
+	cp -f .trash.cfg $HOME/.trashtools  2>> install.log
+	
+	chmod 755 $HOME/.trashtools/trash  2>> install.log	
+	chmod 755 $HOME/.trashtools/restore  2>> install.log	
+	chmod 755 $HOME/.trashtools/trashclean  2>> install.log
+	chmod 755 $HOME/.trashtools/trashcontent  2>> install.log
+	chmod 755 $HOME/.trashtools/trashlist  2>> install.log
+	chmod 755 $HOME/.trashtools/.trash.cfg  2>> install.log	
+
+	cat .trashautoclean > $HOME/.trashtools/.trashautoclean
+	chmod 755 $HOME/.trashtools/.trashautoclean  2>> install.log
+
+	if [ ! -s install.log ]; then
+		echo -e "\e[1;32m    Instalacja przebiegła pomyślnie. Więcej info w README :)\e[0m"
+		/bin/rm -f install.log
+	else echo -e "\e[1;31mCoś poszło nie tak podszas instalacji. Sprawdź plik install.log\e[0m" ; exit 0
+	fi
+	else echo -e "\e[1;34mNic nie zainstalowano. Do widzenia :(\e[0m"
+fi
+
+echo -e -n "\e[1;34mCzy chcesz włączyć automatyczne czyszczenie kosza ze starych plików? [y/n] \e[0m\n\e[1;30m(zawsze będziesz mógł to zmienić w pliku ~/.trashrc)\e[0m"
+read QUES
+
+if  [[  $QUES  ==  "Y"  ||  $QUES  ==  "y"  ]]  ; then
+
+	echo -n -e "\e[1;34mPodaj liczbę dni, po której elementy będą usuwane z kosza:\e[0m"
+	read NUM
+
+	while  [[ ! "$NUM" =~ ^[0-9]+?$ ]] ; do
+		echo -n -e "\e[1;31mPodany parametr nie jest liczbą! Wpisz liczbę:\e[0m"
+		read NUM
+	done
+
+	cat .trash.cfg | sed -e 's/AUTOCLEAN=false/AUTOCLEAN=true/; s/DAYS=@@@/DAYS='$NUM'/' > $HOME/.trashtools/.trash.cfg
+
+fi
+
+if [ ! -s install.log ]; then
+	echo -e "\e[1;32m    Poprawnie skonfigurowano .trashautoclean :)\e[0m"
+	/bin/rm -f install.log
+else echo -e "\e[1;31mCoś poszło nie tak w konfiguracji .trashautoclean . Sprawdź plik install.log\e[0m" ; exit 0
+fi
+
+
+

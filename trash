@@ -1,0 +1,40 @@
+#!/bin/bash
+
+#Czyta domyslna konfiguracje
+. ~/.trashtools/.trash.cfg  >&2
+
+#Czyta kofiguracje uzytkownika jesli zdefiniowana
+
+if [ -r ~/.trashrc ];then
+	. ~/.trashrc  >&2
+fi
+
+
+
+if [ ! -e $TRASHLOC ] ; then
+	mkdir "$TRASHLOC"
+fi
+
+echo -e -n "\e[1;32mUsunieto: \e[0m" 
+
+for i in $@ ; do #pętla po argumentach z nazwami do usuniecia (niestety spacja separuje argumenty = dzieli nazwe)
+
+FILENAME=$i #ostatni argument
+if [ ! ${i:0:1} == "-" ];then
+
+
+	if [ -e "$FILENAME" ]; then
+		mv --backup=numbered $FILENAME "$TRASHLOC" #tworzenie kilka kopii danego 'smiecia'
+		echo "$PWD"/"$FILENAME" `date +'%j %Y'` "$TRASHLOC"/"$FILENAME" >> $HOME/.trashtools/.history #tworzy historie do zarzadzania koszem
+		if ! grep -q "$TRASHLOC" $HOME/.trashtools/.locahistory; then
+			echo $TRASHLOC >> $HOME/.trashtools/.locahistory #tworzy historie lokacji dla menadzera
+		fi
+		echo -e -n "\e[1;34m$FILENAME \e[0m" 
+	else
+
+		echo -e -n "\e[1;31mPlik $FILENAME nie istnieje! \e[0m"
+	fi
+
+fi
+done
+echo -e #newline

@@ -1,0 +1,32 @@
+################################
+# TRASH-TOOLS-v0.2 README FILE #
+################################
+Author: Bartlomiej Rzeszotarski
+Projekt na "Jezyki skryptowe"
+
+Trash-tools to skrypty pomagajace w obsludze usunietych plików (zabezopiecza przed przypadkowa utrata danych). 
+Polecenie rm jest zastapione skryptem o nazwie trash, by przenosic pliki do kosza, skad pozniej moga byc juz usuwane pernamentnie. 
+Mozliwe jest wlaczenie automatycznego usuwania starych plikow z kosza w pliku .trashtools/.trashautoclean (wiecej w man/trashtools)
+
+1. INSTALACJA
+	Aby uruchomic instalacje, wystarczy odpalic plik INSTALL (uprzednio dodajac sobie prawa wykonania pliku inst.). 
+	Utworzony zostanie folder .trashtools w folderze domowym.
+	Do pliku .bashrc zostana dopisane takie linijki:
+
+		export PATH=$PATH:$HOME/.trashtools
+		alias "rm=trash"
+		alias "rm!=/bin/rm -r"
+		$HOME/.trashtools/.trashautoclean
+	
+	UWAGA!: polecenie rm zostaje aktywne, lecz bedzie zastapione poleceniem trash. Aby móc korzystac ze stamdardowego rm uzyj komendy rm! lub /bin/rm (wtedy wszystkie flagi polecenia rm sa aktywne)
+
+2. SPIS NOWYCH KOMEND (opisy uzycia w man/trashtools - otworzenie strony podrecznika komenda: man ./trashtools)
+	trash - przenosi pliki do folderu .trash
+	restore - przywraca plik z .trash
+	trashcontent - drukuje na ekran zawartosc koszy
+	trashclean - czysci kosze ze wszystkich plikow(ukrytych tez)
+	trashlist - listuje wszystkie znane kosze
+	rm! - wywoluje komende standardowego rm
+
+3. PRAWA MODYFIKACJI
+	'Feel free to change everything' ;)

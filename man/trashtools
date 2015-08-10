@@ -1,0 +1,95 @@
+.\" Manpage for trashtools.
+.TH man 1 "19 April 2014" "0.2" "TRASH-TOOLS-v0.2 man page"
+.SH OPIS
+.I "Trash-tools" 
+to skrypty pomagajace w obsludze usunietych plików (zabezopiecza przed przypadkowa utrata danych). 
+Polecenie rm jest zastapione skryptem o nazwie trash, by przenosic pliki do kosza, skad pozniej moga byc juz usuwane pernamentnie. 
+Mozliwe jest wlaczenie automatycznego usuwania starych plikow z kosza w pliku .trashtools/.trashautoclean
+
+.SH KOMENDY
+
+.SS trash
+przenosi pliki do folderu .trash
+.br
+Podczas instalacji polecenie rm jest aliasowane do polecenia trash, więc rm -rf * przeniesie wszystkie pliki do kosza! (zgodnie z działaniem polecenia trash) Polecenie trash nie ma dodatkowych opcji => każdy argument jest nazwą pliku, który ma trafić "do kosza"
+
+.SS restore  arg1 [arg2] 
+przywraca plik z .trash
+.br
+.I arg1 
+to nazwa lub pelna sciezka pliku znajdującego się w koszu, który ma zostać przywrócony
+.br
+.I arg2 
+to dodatkowy argument, ktory okresla sciezke do ktorej ma byc przeniesiony plik odzyskany z kosza
+ 
+
+.SS trashcontent [arg1]
+drukuje na ekran zawartosc kosza (lub wielu koszy). W pliku konfiguracyjnym ~/.trashrc można zmienić flagi listowania
+.br
+.I arg1 
+nazwa pliku ktory szukamy w koszu (i chcemy sie dowiedziec w ktorym jest), lub folder w ktorym kosz sie znajduje
+
+.SS trashclean [arg1]
+czysci wszystkie kosze ze wszystkich elementow (również ukrytych) 
+.br
+.I arg1 
+sciazka do kosza ktory chcemy wyczyscic
+
+.SS trashlist
+wypisuje na ekran wszystkie znane kosze
+
+.SS rm!
+wywoluje komende standardowego rm 
+.br
+.I patrz:
+man rm
+
+.SH OPIS PLIKOW
+
+.SS .trashautoclean
+automatycznie usuwa pliki starsze niz ilosc dni podana w zmiennej DAYS w pliku konfiguracyjnym ~/.trashrc
+.br
+aby wyłączyć automatyczne usuwanie możesz skorzystać z pliku INSTALL (negując pierwsze pytanie) lub edytowac plik ~/.trashrc
+
+.SS .history
+przechowuje informacje o sciezce skad przybyl plik do kosza i dacie (dzien i rok), a takze lokalizacji w koszu
+
+.SS .locahistory
+przechowuje informacji o sciezkach do wszystkich koszy utworzonych przez trashtools
+
+.SS .trash.cfg
+zawiera konfiguracje domyslna (tworzoną podczas instalacji) - opisy zmiennych sa wewnatrz pliku konfiguracyjnego
+
+.SS ~/.trashrc
+zawiera konfiguracje uzytkownika - opisy zmiennych sa wewnatrz pliku konfiguracyjnego
+
+
+.SH PRZYKLADY
+.SS rm plik
+przenosi plik do kosza
+.SS trash plik
+j.w.
+.SS trashcontent 
+wypisuje na ekran zawartosci wszystkich koszy
+.SS trashcontent NAZWA
+wypisuje zawartosc kosza w ktorym jest plik NAZWA, badz ktory lezy w folderze NAZWA
+.SS restore plik
+przywraca plik w miejsce skad zostal usuniety
+.SS restore plik path
+przywraca plik w miejsce path
+.SS trashclean
+czysci wszystkie kosze pernamentnie
+.SS trashclean path/.trash
+czysci pernamentnie kosz path/.trash
+.SS rm *
+przenosi do kosza wszystkie pliki z folderu wywolania komendy
+.SS rm -r -f -i *dat
+przenosi do kosza wszystkie pliki z rozszerzeniem *dat z folderu wywolania komendy
+.SS rm! -r -f *
+.I NADAL BARDZO NIEBEZPIECZNE! 
+Usuwa bez skrupułów wszystko z folderu! 
+.SH ZNANE BUGI
+1. Są problemy z zagniezdzonymi folderami (usuniecie folderu z ktorego plik aktualnie znajduje sie w koszu, a nastepnie przywrocenie tego pliku powoduje bledy)
+
+.SH AUTOR
+Bartlomiej Rzeszotarski - WFiIS AGH

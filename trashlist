@@ -1,0 +1,12 @@
+#!/bin/bash
+LIST=$(cat $HOME/.trashtools/.locahistory)
+echo -e "\e[1;30m------------------------------------\e[0m"
+echo -e "\e[1;32m         Lista znanych koszy        \e[0m"
+echo -e "\e[1;30m------------------------------------\e[0m"
+if [ "$LIST" ];then
+	for TPATH in $LIST;do
+		echo -e "\e[1;35m$TPATH\e[0m"
+	done
+else echo -e "\e[1;31m               BRAK                 \e[0m"
+fi
+echo -e "\e[1;30m------------------------------------\e[0m"

@@ -1,0 +1,56 @@
+#!/bin/bash
+# Somyslnie usuwa wszystkie kosze wraz z zawartoscia oraz historie usunietych plikow
+# Czyli wszystko sprzata
+# Z jednym parametrem czysci dany kosz
+
+if [ $# == 0 ];then
+	echo -n -e "\e[1;34mCzy na pewno chcesz wyczyscic kosze? \nUmieszczone w nich pliki zostaną bezpowrotnie utracone! [Y/n]\e[0m"
+	read QUE
+	if  [[  $QUE  ==  "Y"  ||  $QUE  ==  "y"  ]]  ; then
+		echo -e "\e[1;30m------------------------------------\e[0m"
+	
+		TRPATH=$(echo $(cat $HOME/.trashtools/.locahistory))
+		if [ "$TRPATH" ];then
+
+			for LINE in $TRPATH;do
+				echo -n -e "\e[1;32mUsuwam \e[0m"
+				echo -e "\e[1;35m$LINE\e[0m"
+				/bin/rm -rf $LINE
+			done
+
+			echo  > $HOME/.trashtools/.history
+			echo  > $HOME/.trashtools/.locahistory
+		fi
+
+		echo -e "\e[1;30m------------------------------------\e[0m"
+		echo -e "\e[1;32m            Wyczyszczone            \e[0m"
+		echo -e "\e[1;30m------------------------------------\e[0m"
+	fi
+fi
+
+if [ "$1" ];then
+	TPATH=$1
+	if [ ! -e $TPATH ];then
+		echo -e "\e[1;31mKosz o podanej sciezce nie istnieje! \e[0m"
+	else
+		if grep -q "$1" $HOME/.trashtools/.locahistory;then
+			# musi wyczyscic historie
+			cat $HOME/.trashtools/.history > $HOME/.trashtools/.tmphistory
+			grep -v "$1" $HOME/.trashtools/.tmphistory > $HOME/.trashtools/.history
+			cat $HOME/.trashtools/.locahistory > $HOME/.trashtools/.tmphistory
+			grep -v "$1" $HOME/.trashtools/.tmphistory > $HOME/.trashtools/.locahistory
+			/bin/rm -f $HOME/.trashtools/.tmphistory
+			#wlasciwe usuniecie kosza
+			/bin/rm -rf $1
+			echo -e "\e[1;30m------------------------------------\e[0m"
+			echo -n -e "\e[1;32mUsuwam \e[0m"
+			echo -e "\e[1;35m$1\e[0m"
+			echo -e "\e[1;30m------------------------------------\e[0m"
+			echo -e "\e[1;32m            Wyczyszczone            \e[0m"
+			echo -e "\e[1;30m------------------------------------\e[0m"
+		else
+			echo -e "\e[1;31mKosz o podanej sciezce nie istnieje! \e[0m"
+		fi
+	fi
+
+fi

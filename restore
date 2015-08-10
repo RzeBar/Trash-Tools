@@ -1,0 +1,67 @@
+#!/bin/bash
+#Restors items from trash
+
+
+#Czyta domyslna konfiguracje
+. ~/.trashtools/.trash.cfg  >&2
+
+#Czyta kofiguracje uzytkownika jesli zdefiniowana
+
+if [ -r ~/.trashrc ];then
+	. ~/.trashrc  >&2
+fi
+
+
+
+if [ $# == 1 ]; then
+
+	FNAME=$1
+
+
+	if grep -q "$1" ~/.trashtools/.history; then
+
+		THATFILE=$(grep "$1" ~/.trashtools/.history | awk '{print $4}')
+		if [ ! $(echo "$THATFILE" | wc -l) -eq 1 ];then
+			echo -e "\e[1;34mZnaleziono kilka plikow o tej nazwie w roznych lokacjach:\e[0m"
+			for line in $THATFILE;do
+				echo $line
+			done
+			echo -e "\e[1;34mKtory przywrocic? Wklej sciezke z powyzszych:\e[0m"
+			read THATFILE
+		fi
+
+		DEST=$(cat $HOME/.trashtools/.history | grep "$THATFILE" | awk '{print $1}' | tail -n 1 | sed -e 's/'$FNAME'//')
+		cat $HOME/.trashtools/.history > $HOME/.trashtools/.tmphistory
+		grep -v "$THATFILE" $HOME/.trashtools/.tmphistory > $HOME/.trashtools/.history
+		/bin/rm -f $HOME/.trashtools/.tmphistory
+		mv -b $THATFILE $DEST
+		echo -e "\e[1;32mPrzywrócono: \e[1;34m$FNAME\e[0m" 
+	else echo -e "\e[1;31mPlik $FNAME nie istnieje! \e[0m"
+
+
+
+	fi
+
+elif [ $# == 2 ]; then
+
+	FNAME=$1
+	if grep -q "$1" ~/.trashtools/.history; then
+		THATFILE=$(grep "$1" ~/.trashtools/.history | awk '{print $4}')
+		if [ ! $(echo "$THATFILE" | wc -l) -eq 1 ];then
+			echo -e "\e[1;34mZnaleziono kilka plikow o tej nazwie:\e[0m"
+			for line in $THATFILE;do
+				echo $line
+			done
+			echo -e "\e[1;34m Ktory usunac? Wklej sciezke z powyzszych:\e[0m"
+			read THATFILE
+		fi
+
+		DEST=$2
+		mv $THATFILE $DEST
+		echo -e "\e[1;32mPrzywrócono: \e[1;34m$FNAME\e[0m" 
+		cat $HOME/.trashtools/.history > $HOME/.trashtools/.tmphistory
+		grep -v "$THATFILE" $HOME/.trashtools/.tmphistory > $HOME/.trashtools/.history
+		/bin/rm -f $HOME/.trashtools/.tmphistory
+	else echo -e "\e[1;31mPlik $FNAME nie istnieje! \e[0m"
+	fi
+fi

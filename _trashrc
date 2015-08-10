@@ -1,0 +1,16 @@
+######################
+# TRASH-TOOLS CONFIG #	przykladowy plik konfiguracji uzytkowanika
+######################
+
+#sciezka w ktorej pojawi sie kosz (tylko jedna możliwa)
+TRASHLOC=$HOME/.trash
+#TRASHLOC=$PWD/.trash #tworzy lokalne kosze
+
+#czyscic automatycznie? [t/n]  == [true/false]
+AUTOCLEAN=false
+
+#ilosc dni do trashautoclean
+DAYS=@@@
+
+#flagi dla ls w trashcontent (sposob listowania zawartosci trashy)
+TCFLAG=-la
